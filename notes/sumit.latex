@@ -1,0 +1,320 @@
+%%
+% Eisvogel pandoc LaTeX template
+% Customized for Sumit Mazumdar — Smart Contract Audit Reports
+%%
+
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names,table}{xcolor}
+
+\documentclass[
+  a4paper,
+  captions=tableheading
+]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp}
+\else
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+
+\usepackage{lmodern}
+
+% -----------------------------------------------
+% FONTS
+% -----------------------------------------------
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0
+  \usepackage[default]{sourcesanspro}
+  \usepackage{sourcecodepro}
+\else
+  \usepackage[default]{sourcesanspro}
+  \usepackage{sourcecodepro}
+\fi
+
+\usepackage{upquote}
+\IfFileExists{microtype.sty}{%
+  \usepackage{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath}
+}{}
+
+\makeatletter
+\@ifundefined{KOMAClassName}{
+  \IfFileExists{parskip.sty}{\usepackage{parskip}}{%
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{\KOMAoptions{parskip=half}}
+\makeatother
+
+\usepackage{xcolor}
+
+% -----------------------------------------------
+% SUMIT'S BLUE PROFESSIONAL COLOR PALETTE
+% -----------------------------------------------
+\definecolor{sm-primary}{HTML}{1A4A7A}       % Deep navy blue
+\definecolor{sm-accent}{HTML}{2E7DD1}         % Bright professional blue
+\definecolor{sm-light}{HTML}{D6E8FA}          % Pale blue (table rows, bg)
+\definecolor{sm-rule}{HTML}{2E7DD1}           % Blue rule lines
+\definecolor{sm-text}{HTML}{1C1C2E}           % Near-black text
+\definecolor{sm-muted}{HTML}{5A6A7A}          % Muted caption/footer text
+\definecolor{heading-color}{HTML}{1A4A7A}
+\definecolor{caption-color}{HTML}{5A6A7A}
+\definecolor{blockquote-border}{HTML}{2E7DD1}
+\definecolor{blockquote-text}{HTML}{3A5A7A}
+\definecolor{default-linkcolor}{HTML}{2E7DD1}
+\definecolor{default-filecolor}{HTML}{2E7DD1}
+\definecolor{default-citecolor}{HTML}{1A4A7A}
+\definecolor{default-urlcolor}{HTML}{2E7DD1}
+
+% -----------------------------------------------
+% PAGE GEOMETRY
+% -----------------------------------------------
+\usepackage[margin=2.5cm,includehead=true,includefoot=true,centering]{geometry}
+
+% -----------------------------------------------
+% BLOCKQUOTE STYLE
+% -----------------------------------------------
+\usepackage{mdframed}
+\newmdenv[
+  rightline=false,
+  bottomline=false,
+  topline=false,
+  linewidth=3pt,
+  linecolor=blockquote-border,
+  skipabove=\parskip
+]{customblockquote}
+\renewenvironment{quote}{%
+  \begin{customblockquote}\list{}{\rightmargin=0em\leftmargin=0em}%
+  \item\relax\color{blockquote-text}\ignorespaces
+}{%
+  \unskip\unskip\endlist\end{customblockquote}
+}
+
+% -----------------------------------------------
+% CAPTIONS
+% -----------------------------------------------
+\usepackage[
+  font={stretch=1.2},
+  textfont={color=caption-color},
+  position=top,
+  skip=4mm,
+  labelfont=bf,
+  singlelinecheck=false,
+  justification=raggedright
+]{caption}
+\setcapindent{0em}
+
+% -----------------------------------------------
+% HEADINGS
+% -----------------------------------------------
+\addtokomafont{section}{\color{heading-color}}
+\addtokomafont{subsection}{\color{sm-accent}}
+\addtokomafont{subsubsection}{\color{sm-muted}}
+
+% -----------------------------------------------
+% TABLES
+% -----------------------------------------------
+\usepackage{longtable,booktabs,array}
+\usepackage{calc}
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+
+\definecolor{table-row-color}{HTML}{EBF4FF}
+\definecolor{table-rule-color}{HTML}{2E7DD1}
+\arrayrulecolor{table-rule-color}
+\setlength\heavyrulewidth{0.3ex}
+\renewcommand{\arraystretch}{1.3}
+
+% -----------------------------------------------
+% GRAPHICS
+% -----------------------------------------------
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+% -----------------------------------------------
+% LISTINGS (Code Blocks)
+% -----------------------------------------------
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=\small,commandchars=\\\{\}}
+
+\definecolor{listing-background}{HTML}{F0F6FF}
+\definecolor{listing-rule}{HTML}{2E7DD1}
+\definecolor{listing-numbers}{HTML}{8AABCC}
+\definecolor{listing-text-color}{HTML}{1C1C2E}
+\definecolor{listing-keyword}{HTML}{1A4A7A}
+\definecolor{listing-keyword-2}{HTML}{2E7DD1}
+\definecolor{listing-keyword-3}{HTML}{7B2FBE}
+\definecolor{listing-identifier}{HTML}{1A4A7A}
+\definecolor{listing-string}{HTML}{0E7A6E}
+\definecolor{listing-comment}{HTML}{7A8A9A}
+
+\lstdefinestyle{sumit_listing_style}{
+  language         = java,
+  numbers          = left,
+  xleftmargin      = 2.7em,
+  framexleftmargin = 2.5em,
+  backgroundcolor  = \color{listing-background},
+  basicstyle       = \color{listing-text-color}\linespread{1.0}\small\ttfamily{},
+  breaklines       = true,
+  frame            = single,
+  framesep         = 0.19em,
+  rulecolor        = \color{listing-rule},
+  frameround       = ffff,
+  tabsize          = 4,
+  numberstyle      = \color{listing-numbers},
+  aboveskip        = 1.0em,
+  belowskip        = 0.1em,
+  abovecaptionskip = 0em,
+  belowcaptionskip = 1.0em,
+  keywordstyle     = {\color{listing-keyword}\bfseries},
+  keywordstyle     = {[2]\color{listing-keyword-2}\bfseries},
+  keywordstyle     = {[3]\color{listing-keyword-3}\bfseries\itshape},
+  sensitive        = true,
+  identifierstyle  = \color{listing-identifier},
+  commentstyle     = \color{listing-comment},
+  stringstyle      = \color{listing-string},
+  showstringspaces = false,
+}
+\lstset{style=sumit_listing_style}
+
+% -----------------------------------------------
+% MISC
+% -----------------------------------------------
+\setlength{\emergencystretch}{3em}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+
+\usepackage{csquotes}
+\usepackage{footnotebackref}
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
+\urlstyle{same}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor={sm-accent},
+  filecolor={sm-accent},
+  citecolor={sm-primary},
+  urlcolor={sm-accent},
+  breaklinks=true,
+  pdfcreator={LaTeX via pandoc — Sumit Mazumdar Audit Template}
+}
+
+% -----------------------------------------------
+% TITLE / AUTHOR / DATE
+% -----------------------------------------------
+\usepackage{titling}
+\title{$title$}
+\author{Sumit Mazumdar}
+\date{$date$}
+
+% -----------------------------------------------
+% HEADER & FOOTER
+% -----------------------------------------------
+\usepackage[headsepline,footsepline]{scrlayer-scrpage}
+
+\newpairofpagestyles{sumit-header-footer}{
+  \clearpairofpagestyles
+  \ihead*{\textcolor{sm-primary}{\textbf{$title$}}}
+  \chead*{}
+  \ohead*{\textcolor{sm-muted}{$date$}}
+  \ifoot*{\textcolor{sm-muted}{Sumit Mazumdar}}
+  \cfoot*{\textcolor{sm-muted}{Confidential Audit Report}}
+  \ofoot*{\textcolor{sm-accent}{\thepage}}
+  \addtokomafont{pageheadfoot}{\upshape\small}
+}
+\pagestyle{sumit-header-footer}
+
+% -----------------------------------------------
+% TITLE PAGE
+% -----------------------------------------------
+\usepackage{pagecolor}
+\usepackage{afterpage}
+\usepackage{tikz}
+
+%%
+%% END PREAMBLE
+%%
+
+\begin{document}
+
+%%
+%% TITLE PAGE
+%%
+\begin{titlepage}
+\newgeometry{left=6cm, top=3cm, bottom=3cm, right=3cm}
+
+% Blue sidebar strip
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[color=sm-primary] (current page.north west) rectangle ([xshift=5.2cm]current page.south west);
+  \fill[color=sm-accent]  ([xshift=5.0cm]current page.north west) rectangle ([xshift=5.2cm]current page.south west);
+\end{tikzpicture}
+
+\begin{flushleft}
+\vspace*{2cm}
+
+% Decorative rule
+{\color{sm-accent}\rule{0.85\textwidth}{2pt}}\\[0.4em]
+
+% Report Title
+{\fontsize{28}{34}\selectfont\bfseries\textsf{\textcolor{sm-primary}{$title$}}}\\[0.6em]
+
+% Subtitle if present
+$if(subtitle)$
+{\large\textsf{\textcolor{sm-accent}{$subtitle$}}}\\[1.2em]
+$endif$
+
+{\color{sm-accent}\rule{0.85\textwidth}{0.5pt}}\\[2.5em]
+
+% Author block
+{\large\textsf{\textcolor{sm-text}{Prepared by}}}\\[0.3em]
+{\LARGE\bfseries\textsf{\textcolor{sm-primary}{Sumit Mazumdar}}}\\[0.4em]
+{\normalsize\textsf{\textcolor{sm-muted}{Smart Contract Security Auditor}}}\\[2em]
+
+% Date
+{\normalsize\textsf{\textcolor{sm-muted}{$date$}}}\\[3em]
+
+% Confidential notice
+\fbox{%
+  \parbox{0.5\textwidth}{%
+    \centering\small\textsf{\textcolor{sm-primary}{\textbf{CONFIDENTIAL}}\\
+    For authorized recipients only}
+  }
+}
+
+\vfill
+
+% Bottom tagline
+{\small\textsf{\textcolor{sm-muted}{Audit findings are provided in good faith based on the code reviewed at the specified commit hash.}}}
+
+\end{flushleft}
+\end{titlepage}
+\restoregeometry
+\pagenumbering{arabic}
+
+%%
+%% DOCUMENT BODY
+%%
+$body$
+
+\end{document}
