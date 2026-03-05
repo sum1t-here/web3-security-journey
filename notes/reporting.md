@@ -45,6 +45,7 @@ Ask yourself two questions before writing any title:
 ---
 
 ## 🎯 Severity & Likelihood
+[Codehawks severity guide](https://docs.codehawks.com/hawks-auditors/how-to-evaluate-a-finding-severity)
 
 ### Likelihood Levels
 
