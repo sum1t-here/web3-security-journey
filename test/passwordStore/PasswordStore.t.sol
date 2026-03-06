@@ -31,8 +31,8 @@ contract PasswordStoreTest is Test {
         passwordStore.getPassword();
     }
 
-    function testFuzz_anyone_can_set_password(address randomAddress) public{
-        vm.assume(owner!=randomAddress);
+    function testFuzz_anyone_can_set_password(address randomAddress) public {
+        vm.assume(owner != randomAddress);
         vm.prank(randomAddress);
         string memory expectedPassword = "myNewPassword";
         passwordStore.setPassword(expectedPassword);
@@ -40,6 +40,5 @@ contract PasswordStoreTest is Test {
         vm.prank(owner);
         string memory actualPassword = passwordStore.getPassword();
         assertEq(actualPassword, expectedPassword);
-
     }
 }

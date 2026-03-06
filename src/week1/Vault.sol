@@ -35,7 +35,7 @@ contract Vault {
         _balances[msg.sender] -= amount;
 
         // 3. Interaction
-        (bool success, ) = msg.sender.call{value: amount}("");
+        (bool success,) = msg.sender.call{value: amount}("");
         require(success, "Withdrawal failed");
     }
 

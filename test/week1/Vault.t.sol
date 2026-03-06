@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import { Test } from "forge-std/Test.sol";
-import { Vault } from "../../src/week1/Vault.sol";
+import {Test} from "forge-std/Test.sol";
+import {Vault} from "../../src/week1/Vault.sol";
 
 contract VaultTest is Test {
     Vault public vault;
