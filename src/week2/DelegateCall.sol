@@ -22,9 +22,7 @@ contract Logic {
 
     // Logic's storage will be set. Proxy's storage is not set
     function setVarsDelegateCall(address _contract, uint256 _num) public payable {
-        (bool success, bytes memory data) = _contract.delegatecall(
-            abi.encodeWithSignature("setVars(uint256)", _num)
-        );
+        (bool success, bytes memory data) = _contract.delegatecall(abi.encodeWithSignature("setVars(uint256)", _num));
 
         emit DelegateResponse(success, data);
     }

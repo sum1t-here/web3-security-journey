@@ -20,9 +20,12 @@ The most famous example is the **2016 DAO hack** — attackers drained millions 
 | 1 | **Single-Function** | Same function | 🔴 High |
 | 2 | **Cross-Function** | Different function, same contract | 🔴 High |
 | 3 | **Cross-Contract** | External contract → back in | 🔴 Critical |
-| 4 | **Read-Only** | View function, stale state | 🟠 Medium |
+| 4 | **Cross-Chain** | External contract → back in | 🔴 Critical |
+| 5 | **Read-Only** | View function, stale state | 🟠 Medium |
 
 ---
+
+[Historical collections of reentrancy attacks](https://github.com/pcaversaccio/reentrancy-attacks)
 
 ---
 

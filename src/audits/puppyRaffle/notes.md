@@ -1,6 +1,7 @@
 # About
 
-> About the project in my words
+> About the project in my words.
+`selectWinner` picks the winner, there is a raffle duration.
 
 # Informational
 

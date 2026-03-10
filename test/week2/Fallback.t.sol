@@ -17,7 +17,7 @@ contract FallbackTest is Test {
     // 2. Call a function that doesn't exist on the contract
 
     function testFallback() public {
-        (bool success, ) = address(fb).call{value: 1 ether}("");
+        (bool success,) = address(fb).call{value: 1 ether}("");
         require(success, "Fallback called");
     }
-} 
+}
