@@ -1,13 +1,63 @@
 ## High
 
-### [H-1] Incorrect feel calculation in `TSwapPool::getInputAmountBasedOnOutput`, causes protocol to charge too much fee from users, leading to loss of funds
+### [H-1] Incorrect fee calculation in `TSwapPool::getInputAmountBasedOnOutput`, causes protocol to charge too much fee from users, leading to loss of funds
 
 **Description:** The `getInputAmountBasedOnOutput` function calculates the amount of input tokens required to receive a certain amount of output tokens. When calculating the fee it scales the output amount by 10000, which is incorrect. It should scale by 1000.
 
 **Impact:** Protocol charges too much fee from users.
 
-**Proof of concept:** 
-<!-- todo -->
+**Proof of concept:** Add the following test to `TSwapPoolTest.t.sol`
+
+<details>
+<summary>Proof of Code</summary>
+
+```javascript
+    function test_WrongFeeChargedInSwapExactOutput() public {
+        vm.startPrank(liquidityProvider);
+        weth.approve(address(pool), 100e18);
+        poolToken.approve(address(pool), 100e18);
+        pool.deposit(100e18, 100e18, 100e18, uint64(block.timestamp));
+        vm.stopPrank();
+
+        uint256 outputWeth = 1e17;
+
+        // correct formula (0.3% fee) uses 1000 not 10000
+        uint256 correctInputAmount = (
+            (poolToken.balanceOf(address(pool)) * outputWeth * 1000) /
+            ((weth.balanceOf(address(pool)) - outputWeth) * 997)
+        );
+
+        // what the contract actually charges (10000 instead of 1000)
+        uint256 actualInputAmount = pool.getInputAmountBasedOnOutput(
+            outputWeth,
+            poolToken.balanceOf(address(pool)),
+            weth.balanceOf(address(pool))
+        );
+
+        console.log("correct input (0.3% fee) :", correctInputAmount);
+        console.log("actual input  (91.3% fee):", actualInputAmount);
+        console.log("overcharge               :", actualInputAmount - correctInputAmount);
+
+        assertGt(actualInputAmount, correctInputAmount);
+
+        vm.startPrank(user);
+        poolToken.approve(address(pool), type(uint256).max);
+        poolToken.mint(user, 100e18);
+
+        uint256 userPoolTokenBefore = poolToken.balanceOf(user);
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        uint256 userPoolTokenAfter = poolToken.balanceOf(user);
+
+        uint256 actualPaid = userPoolTokenBefore - userPoolTokenAfter;
+
+        console.log("user paid poolTokens     :", actualPaid);
+        console.log("user should have paid    :", correctInputAmount);
+
+        assertGt(actualPaid, correctInputAmount);
+        vm.stopPrank();
+    }
+```
+</details>
 
 **Recommended mitigation:** Change the fee calculation to scale by 1000 instead of 10000.
 
@@ -43,7 +93,71 @@ function getInputAmountBasedOnOutput(
 And the price moves HUGE -> 1 WETH = 1000000 USDC
 5. The transaction completes, but the user sends way too much USDC.
 
-<!-- todo poc -->
+<detail>
+<summary>Proof of Code</summary>
+
+```javascript
+    function test_SwapExactOutputNoSlippageProtection() public {
+        vm.startPrank(liquidityProvider);
+        weth.approve(address(pool), 100e18);
+        poolToken.approve(address(pool), 100e18);
+        pool.deposit(100e18, 100e18, 100e18, uint64(block.timestamp));
+        vm.stopPrank();
+
+        // mint user enough poolTokens to handle price change
+        poolToken.mint(user, 100e18);
+
+        uint256 outputWeth = 1e18;
+
+        uint256 expectedInputAmount = pool.getInputAmountBasedOnOutput(
+            outputWeth,
+            poolToken.balanceOf(address(pool)),
+            weth.balanceOf(address(pool))
+        );
+        console.log("expected input at current price:", expectedInputAmount);
+
+        // simulate large trade that drains weth reserves (price impact)
+        address frontrunner = makeAddr("frontrunner");
+        poolToken.mint(frontrunner, 1000e18);
+        vm.startPrank(frontrunner);
+        poolToken.approve(address(pool), type(uint256).max);
+        // frontrunner buys a lot of weth, moving the price
+        pool.swapExactInput(
+            poolToken,
+            70e18,
+            weth,
+            1,
+            uint64(block.timestamp)
+        );
+        vm.stopPrank();
+
+        // no maxInputAmount param means user has no protection
+        uint256 actualInputAmount = pool.getInputAmountBasedOnOutput(
+            outputWeth,
+            poolToken.balanceOf(address(pool)),
+            weth.balanceOf(address(pool))
+        );
+        console.log("actual input after price move :", actualInputAmount);
+        console.log("extra poolTokens paid         :", actualInputAmount - expectedInputAmount);
+
+        vm.startPrank(user);
+        poolToken.approve(address(pool), type(uint256).max);
+
+        uint256 userPoolTokenBefore = poolToken.balanceOf(user);
+        // user has no way to set a maxInputAmount — tx goes through at any price
+        pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+        uint256 userPoolTokenAfter = poolToken.balanceOf(user);
+
+        uint256 actualPaid = userPoolTokenBefore - userPoolTokenAfter;
+        console.log("user actually paid            :", actualPaid);
+        console.log("user expected to pay          :", expectedInputAmount);
+
+        // user paid more than they expected — no slippage protection
+        assertGt(actualPaid, expectedInputAmount);
+        vm.stopPrank();
+    }
+```
+</detail>
 
 **Recommended mitigation:** 
 
@@ -80,7 +194,62 @@ This is due to the fact that `swapExactOutput` is called instead of `swapExactIn
 **Impact** Users will swap the wrong amount of tokens, which is a severe disruption of protocol functionality.
 
 **Proof of Concept** 
-<!-- todo -->
+When a user calls `sellPoolTokens(10e18)` expecting to sell exactly 10e18 pool tokens, the contract attempts to pull 111e18 pool tokens from the user — 11x more than specified.
+
+```
+Trace:
+
+ERC20Mock::transferFrom(user: [0x6CA6d1e2D5347Bfab1d91e883F1915560e09129D], TSwapPool: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 111445447453471525688 [1.114e20])
+```
+
+<details>
+<summary>Proof of Code</summary>
+
+```javascript
+    function test_SellPoolTokensMismatch() public {
+        vm.startPrank(liquidityProvider);
+        weth.approve(address(pool), 100e18);
+        poolToken.approve(address(pool), 100e18);
+        pool.deposit(100e18, 100e18, 100e18, uint64(block.timestamp));
+        vm.stopPrank();
+
+        vm.startPrank(user);
+        poolToken.approve(address(pool), 10e18);
+        
+        uint256 poolTokensToSell = 10e18;
+
+        uint256 expectedWeth = pool.getOutputAmountBasedOnInput(
+            poolTokensToSell,
+            poolToken.balanceOf(address(pool)),
+            weth.balanceOf(address(pool))
+        );
+
+        console.log("expected weth out        :", expectedWeth);
+        console.log("pool tokens user has     :", poolToken.balanceOf(user));
+
+        uint256 userPoolTokenBefore = poolToken.balanceOf(user);
+        uint256 userWethBefore = weth.balanceOf(user);
+
+        pool.sellPoolTokens(poolTokensToSell);
+
+        uint256 userPoolTokenAfter = poolToken.balanceOf(user);
+        uint256 userWethAfter = weth.balanceOf(user);
+
+        uint256 actualPoolTokensSold = userPoolTokenBefore - userPoolTokenAfter;
+        uint256 actualWethReceived = userWethAfter - userWethBefore;
+
+        console.log("actual poolTokens sold   :", actualPoolTokensSold);
+        console.log("actual weth received     :", actualWethReceived);
+        console.log("expected weth            :", expectedWeth);
+
+        assertNotEq(actualPoolTokensSold, poolTokensToSell);
+        assertEq(actualWethReceived, poolTokensToSell);
+
+        console.log("extra poolTokens taken   :", actualPoolTokensSold - poolTokensToSell);
+        vm.stopPrank();
+    }
+```
+</details>
 
 **Recommended Mitigation** Consider changing the implementation to use `swapExactInput` instead of `swapExactOutput`.
 
@@ -182,9 +351,100 @@ function deposit(
     {
 ```
 
-### [M-2] Rebase, fee-on-transfer, and ERC-777 tokens break protocol invariant
+### [M-1] Rebase, fee-on-transfer, ERC-777, and centralized ERC20s can break core invariant
 
-<!-- todo -->
+**Description** The core invariant of the protocol is `x * y = k`. 
+`PoolFactory::createPool` accepts any token address with no validation, 
+allowing incompatible token types to be used as pool tokens. Each category 
+breaks the invariant differently:
+
+- **Fee-on-transfer tokens** (e.g. USDT, PAXG) — deduct a fee during 
+  `transferFrom`, so the pool receives less than `inputAmount` but sends 
+  `outputAmount` calculated for the full amount
+- **Rebase tokens** (e.g. stETH, AMPL) — automatically adjust balances 
+  externally, changing pool reserves without any swap occurring
+- **ERC-777 tokens** (e.g. imBTC) — fire hooks on the recipient during 
+  transfer, enabling reentrancy since `_swap` has no `nonReentrant` guard
+- **Centralized ERC20s** (e.g. USDC, USDT) — have admin functions like 
+  `blacklist` and `pause` that can freeze pool funds or block swaps entirely
+```javascript
+// @audit no token validation — any token type accepted
+function createPool(address tokenAddress) external returns (address) {
+    if (s_pools[tokenAddress] != address(0)) {
+        revert PoolFactory__PoolAlreadyExists(tokenAddress);
+    }
+    // no check for weird ERC20 compatibility
+    TSwapPool tPool = new TSwapPool(tokenAddress, i_wethToken, ...);
+}
+```
+
+**Impact** 
+
+| Token Type | How `x * y = k` breaks | Who loses |
+|---|---|---|
+| Fee-on-transfer | Pool receives less than calculated, sends correct output — reserves leak every swap | Liquidity providers |
+| Rebase | Pool balance changes externally, `k` drifts silently | LPs via arbitrage |
+| ERC-777 | Reentrancy during transfer manipulates reserves mid-swap | Everyone in pool |
+| Centralized ERC20 | Admin can blacklist pool address or pause transfers, permanently locking funds | Everyone in pool |
+
+**Proof of Concept**
+
+Fee-on-transfer (1% fee token):
+1. Pool has `100e18 tokenA` and `100e18 WETH` — `k = 10,000`
+2. User calls `swapExactInput` with `inputAmount = 10e18`
+3. `outputAmount` calculated assuming pool receives `10e18`
+4. Token transfers only `9.9e18` to pool after 1% fee
+5. Pool sends `outputAmount` for `10e18` — overpaying by `0.1e18`
+6. `k` is now less than `10,000` — broken silently
+
+Centralized ERC20:
+1. Pool is created with USDC as `poolToken`
+2. Circle blacklists the pool address
+3. All `safeTransfer` and `safeTransferFrom` calls revert
+4. Liquidity providers cannot withdraw — funds permanently locked
+
+**Recommended Mitigation**
+
+Add layered mitigations:
+
+**1. Balance diff check for fee-on-transfer:**
+```diff
+function _swap(...) private {
++   uint256 balanceBefore = inputToken.balanceOf(address(this));
+    inputToken.safeTransferFrom(msg.sender, address(this), inputAmount);
++   if (inputToken.balanceOf(address(this)) - balanceBefore != inputAmount) {
++       revert TSwapPool__FeeOnTransferNotSupported();
++   }
+    outputToken.safeTransfer(msg.sender, outputAmount);
+}
+```
+
+**2. Reentrancy guard for ERC-777:**
+```diff
+- contract TSwapPool is ERC20 {
++ contract TSwapPool is ERC20, ReentrancyGuard {
+
+-     function _swap(...) private {
++     function _swap(...) private nonReentrant {
+```
+
+**3. Stored reserves for rebase tokens (Uniswap V2 pattern):**
+```diff
++ uint256 private reserve0;
++ uint256 private reserve1;
+
+// use reserve0/reserve1 for pricing instead of live balanceOf
+// only update reserves through controlled pool interactions
+```
+
+**4. Minimum — add NatSpec documentation:**
+```diff
++ /// @notice This pool does not support fee-on-transfer tokens,
++ /// rebase tokens, ERC-777 tokens, or centralized ERC20s with
++ /// admin controls. Using such tokens will result in loss of
++ /// funds for liquidity providers.
+function createPool(address tokenAddress) external returns (address) {
+```
 
 ## Low
 
@@ -213,8 +473,52 @@ emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
 
 **Impact** The returned value will always be 0, giving incorrect information to the caller.
 
-**Proof of concept** 
-<!-- todo -->
+**Proof of Concept** Place the following test in `TswapPoolTest.t.sol`
+
+<detail>
+<summary>Proof of Code</summary>
+
+```javascript
+    function test_SwapExactInputReturnsZero() public {
+        vm.startPrank(liquidityProvider);
+        weth.approve(address(pool), 100e18);
+        poolToken.approve(address(pool), 100e18);
+        pool.deposit(100e18, 100e18, 100e18, uint64(block.timestamp));
+        vm.stopPrank();
+
+        vm.startPrank(user);
+        poolToken.approve(address(pool), type(uint256).max);
+
+        uint256 expectedOutput = pool.getOutputAmountBasedOnInput(
+            10e18,
+            poolToken.balanceOf(address(pool)),
+            weth.balanceOf(address(pool))
+        );
+        console.log("expected output :", expectedOutput);
+
+        uint256 actualReturn = pool.swapExactInput(
+        poolToken,
+            10e18,
+            weth,
+            1,
+            uint64(block.timestamp)
+        );
+        console.log("actual return   :", actualReturn);
+        assertEq(actualReturn, 0);
+
+        assertGt(weth.balanceOf(user), 0);
+        console.log("weth received   :", weth.balanceOf(user));
+        vm.stopPrank();
+    }
+```
+
+```javascript
+Logs:
+  expected output : 9066108938801491315
+  actual return   : 0
+  weth received   : 19066108938801491315
+```
+</detail>
 
 **Recommended mitigation**
 
