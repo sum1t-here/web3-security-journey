@@ -18,15 +18,24 @@ contract BaseTest is Test {
     ERC20Mock tokenA;
 
     function setUp() public virtual {
-        thunderLoan = new ThunderLoan();
+        thunderLoanImplementation = new ThunderLoan();
         mockPoolFactory = new MockPoolFactory();
 
         weth = new ERC20Mock();
         tokenA = new ERC20Mock();
 
         mockPoolFactory.createPool(address(tokenA));
-        proxy = new ERC1967Proxy(address(thunderLoan), "");
+
+        // encode initialize call
+        bytes memory initData = abi.encodeWithSelector(
+            ThunderLoan.initialize.selector,
+            address(mockPoolFactory)
+        );
+
+        // pass initData to proxy — calls initialize atomically
+        proxy = new ERC1967Proxy(address(thunderLoanImplementation), initData);
+
+        // cast proxy to ThunderLoan interface
         thunderLoan = ThunderLoan(address(proxy));
-        thunderLoan.initialize(address(mockPoolFactory));
     }
 }
