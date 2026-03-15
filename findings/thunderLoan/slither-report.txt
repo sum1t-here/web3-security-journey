@@ -1,0 +1,324 @@
+'forge clean' running (wd: /Users/sumithere/Desktop/smart-contracts/web3-security-journey)
+'forge config --json' running
+'forge build --build-info src/audits/thunderLoan' running (wd: /Users/sumithere/Desktop/smart-contracts/web3-security-journey)
+INFO:Detectors:
+Detector: reentrancy-balance
+Reentrancy in ThunderLoan.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/protocol/ThunderLoan.sol#180-230):
+	External call allowing reentrancy:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/protocol/ThunderLoan.sol#205)
+	Balance read before the call:
+	- startingBalance = IERC20(token).balanceOf(address(assetToken)) (src/audits/thunderLoan/protocol/ThunderLoan.sol#191)
+	Possible stale balance used after the call in a condition:
+	- endingBalance < startingBalance + fee (src/audits/thunderLoan/protocol/ThunderLoan.sol#226)
+		- stale variable `startingBalance`
+Reentrancy in ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#179-227):
+	External call allowing reentrancy:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#202)
+	Balance read before the call:
+	- startingBalance = IERC20(token).balanceOf(address(assetToken)) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#190)
+	Possible stale balance used after the call in a condition:
+	- endingBalance < startingBalance + fee (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#223)
+		- stale variable `startingBalance`
+Reentrancy in ThunderLoan.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/protocol/ThunderLoan.sol#180-230):
+	External call allowing reentrancy:
+	- assetToken.transferUnderlyingTo(receiverAddress,amount) (src/audits/thunderLoan/protocol/ThunderLoan.sol#210)
+	Balance read before the call:
+	- startingBalance = IERC20(token).balanceOf(address(assetToken)) (src/audits/thunderLoan/protocol/ThunderLoan.sol#191)
+	Possible stale balance used after the call in a condition:
+	- endingBalance < startingBalance + fee (src/audits/thunderLoan/protocol/ThunderLoan.sol#226)
+		- stale variable `startingBalance`
+Reentrancy in ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#179-227):
+	External call allowing reentrancy:
+	- assetToken.transferUnderlyingTo(receiverAddress,amount) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#207)
+	Balance read before the call:
+	- startingBalance = IERC20(token).balanceOf(address(assetToken)) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#190)
+	Possible stale balance used after the call in a condition:
+	- endingBalance < startingBalance + fee (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#223)
+		- stale variable `startingBalance`
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities
+INFO:Detectors:
+Detector: events-maths
+ThunderLoan.updateFlashLoanFee(uint256) (src/audits/thunderLoan/protocol/ThunderLoan.sol#266-272) should emit an event for: 
+	- s_flashLoanFee = newFee (src/audits/thunderLoan/protocol/ThunderLoan.sol#271) 
+ThunderLoanUpgraded.updateFlashLoanFee(uint256) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#263-268) should emit an event for: 
+	- s_flashLoanFee = newFee (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#267) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-arithmetic
+INFO:Detectors:
+Detector: reentrancy-benign
+Reentrancy in ThunderLoan.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/protocol/ThunderLoan.sol#180-230):
+	External calls:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/protocol/ThunderLoan.sol#205)
+	State variables written after the call(s):
+	- s_currentlyFlashLoaning[token] = true (src/audits/thunderLoan/protocol/ThunderLoan.sol#209)
+Reentrancy in ThunderLoan.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/protocol/ThunderLoan.sol#180-230):
+	External calls:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/protocol/ThunderLoan.sol#205)
+	- assetToken.transferUnderlyingTo(receiverAddress,amount) (src/audits/thunderLoan/protocol/ThunderLoan.sol#210)
+	State variables written after the call(s):
+	- s_currentlyFlashLoaning[token] = false (src/audits/thunderLoan/protocol/ThunderLoan.sol#229)
+Reentrancy in ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#179-227):
+	External calls:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#202)
+	State variables written after the call(s):
+	- s_currentlyFlashLoaning[token] = true (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#206)
+Reentrancy in ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#179-227):
+	External calls:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#202)
+	- assetToken.transferUnderlyingTo(receiverAddress,amount) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#207)
+	State variables written after the call(s):
+	- s_currentlyFlashLoaning[token] = false (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#226)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+INFO:Detectors:
+Detector: reentrancy-events
+Reentrancy in ThunderLoan.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/protocol/ThunderLoan.sol#180-230):
+	External calls:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/protocol/ThunderLoan.sol#205)
+	Event emitted after the call(s):
+	- FlashLoan(receiverAddress,token,amount,fee,params) (src/audits/thunderLoan/protocol/ThunderLoan.sol#207)
+Reentrancy in ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#179-227):
+	External calls:
+	- assetToken.updateExchangeRate(fee) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#202)
+	Event emitted after the call(s):
+	- FlashLoan(receiverAddress,token,amount,fee,params) (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#204)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+INFO:Detectors:
+Detector: pragma
+8 different versions of Solidity are used:
+	- Version constraint >=0.6.2 is used by:
+		->=0.6.2 (lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol#4)
+		->=0.6.2 (lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+	- Version constraint >=0.4.16 is used by:
+		->=0.4.16 (lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol#4)
+		->=0.4.16 (lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol#4)
+		->=0.4.16 (lib/openzeppelin-contracts/contracts/interfaces/draft-IERC1822.sol#4)
+		->=0.4.16 (lib/openzeppelin-contracts/contracts/proxy/beacon/IBeacon.sol#4)
+		->=0.4.16 (lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol#4)
+		->=0.4.16 (lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol#4)
+	- Version constraint >=0.4.11 is used by:
+		->=0.4.11 (lib/openzeppelin-contracts/contracts/interfaces/IERC1967.sol#4)
+	- Version constraint >=0.8.4 is used by:
+		->=0.8.4 (lib/openzeppelin-contracts/contracts/interfaces/draft-IERC6093.sol#4)
+	- Version constraint ^0.8.21 is used by:
+		-^0.8.21 (lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Utils.sol#4)
+	- Version constraint ^0.8.20 is used by:
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/proxy/utils/Initializable.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/utils/Address.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/utils/Context.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/utils/Errors.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/utils/LowLevelCall.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol#5)
+		-^0.8.20 (lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol#4)
+		-^0.8.20 (lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol#3)
+		-^0.8.20 (lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol#4)
+	- Version constraint ^0.8.22 is used by:
+		-^0.8.22 (lib/openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol#4)
+		-^0.8.22 (lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol#3)
+	- Version constraint 0.8.34 is used by:
+		-0.8.34 (src/audits/thunderLoan/interfaces/IFlashLoanReceiver.sol#2)
+		-0.8.34 (src/audits/thunderLoan/interfaces/IPoolFactory.sol#2)
+		-0.8.34 (src/audits/thunderLoan/interfaces/ITSwapPool.sol#2)
+		-0.8.34 (src/audits/thunderLoan/interfaces/IThunderLoan.sol#2)
+		-0.8.34 (src/audits/thunderLoan/protocol/AssetToken.sol#2)
+		-0.8.34 (src/audits/thunderLoan/protocol/OracleUpgradeable.sol#2)
+		-0.8.34 (src/audits/thunderLoan/protocol/ThunderLoan.sol#64)
+		-0.8.34 (src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#64)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+INFO:Slither:src/audits/thunderLoan analyzed (30 contracts with 99 detectors), 13 result(s) found
+**THIS CHECKLIST IS NOT COMPLETE**. Use `--show-ignored-findings` to show all the results.
+Summary
+ - [reentrancy-balance](#reentrancy-balance) (4 results) (High)
+ - [events-maths](#events-maths) (2 results) (Low)
+ - [reentrancy-benign](#reentrancy-benign) (4 results) (Low)
+ - [reentrancy-events](#reentrancy-events) (2 results) (Low)
+ - [pragma](#pragma) (1 results) (Informational)
+## reentrancy-balance
+Impact: High
+Confidence: Medium
+ - [ ] ID-0
+Reentrancy in [ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227):
+	External call allowing reentrancy:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L202)
+	Balance read before the call:
+	- [startingBalance = IERC20(token).balanceOf(address(assetToken))](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L190)
+	Possible stale balance used after the call in a condition:
+	- [endingBalance < startingBalance + fee](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L223)
+		- stale variable `startingBalance`
+
+src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227
+
+
+ - [ ] ID-1
+Reentrancy in [ThunderLoan.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230):
+	External call allowing reentrancy:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L205)
+	Balance read before the call:
+	- [startingBalance = IERC20(token).balanceOf(address(assetToken))](src/audits/thunderLoan/protocol/ThunderLoan.sol#L191)
+	Possible stale balance used after the call in a condition:
+	- [endingBalance < startingBalance + fee](src/audits/thunderLoan/protocol/ThunderLoan.sol#L226)
+		- stale variable `startingBalance`
+
+src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230
+
+
+ - [ ] ID-2
+Reentrancy in [ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227):
+	External call allowing reentrancy:
+	- [assetToken.transferUnderlyingTo(receiverAddress,amount)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L207)
+	Balance read before the call:
+	- [startingBalance = IERC20(token).balanceOf(address(assetToken))](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L190)
+	Possible stale balance used after the call in a condition:
+	- [endingBalance < startingBalance + fee](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L223)
+		- stale variable `startingBalance`
+
+src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227
+
+
+ - [ ] ID-3
+Reentrancy in [ThunderLoan.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230):
+	External call allowing reentrancy:
+	- [assetToken.transferUnderlyingTo(receiverAddress,amount)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L210)
+	Balance read before the call:
+	- [startingBalance = IERC20(token).balanceOf(address(assetToken))](src/audits/thunderLoan/protocol/ThunderLoan.sol#L191)
+	Possible stale balance used after the call in a condition:
+	- [endingBalance < startingBalance + fee](src/audits/thunderLoan/protocol/ThunderLoan.sol#L226)
+		- stale variable `startingBalance`
+
+src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230
+
+
+## events-maths
+Impact: Low
+Confidence: Medium
+ - [ ] ID-4
+[ThunderLoanUpgraded.updateFlashLoanFee(uint256)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L263-L268) should emit an event for: 
+	- [s_flashLoanFee = newFee](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L267) 
+
+src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L263-L268
+
+
+ - [ ] ID-5
+[ThunderLoan.updateFlashLoanFee(uint256)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L266-L272) should emit an event for: 
+	- [s_flashLoanFee = newFee](src/audits/thunderLoan/protocol/ThunderLoan.sol#L271) 
+
+src/audits/thunderLoan/protocol/ThunderLoan.sol#L266-L272
+
+
+## reentrancy-benign
+Impact: Low
+Confidence: Medium
+ - [ ] ID-6
+Reentrancy in [ThunderLoan.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230):
+	External calls:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L205)
+	- [assetToken.transferUnderlyingTo(receiverAddress,amount)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L210)
+	State variables written after the call(s):
+	- [s_currentlyFlashLoaning[token] = false](src/audits/thunderLoan/protocol/ThunderLoan.sol#L229)
+
+src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230
+
+
+ - [ ] ID-7
+Reentrancy in [ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227):
+	External calls:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L202)
+	- [assetToken.transferUnderlyingTo(receiverAddress,amount)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L207)
+	State variables written after the call(s):
+	- [s_currentlyFlashLoaning[token] = false](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L226)
+
+src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227
+
+
+ - [ ] ID-8
+Reentrancy in [ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227):
+	External calls:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L202)
+	State variables written after the call(s):
+	- [s_currentlyFlashLoaning[token] = true](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L206)
+
+src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227
+
+
+ - [ ] ID-9
+Reentrancy in [ThunderLoan.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230):
+	External calls:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L205)
+	State variables written after the call(s):
+	- [s_currentlyFlashLoaning[token] = true](src/audits/thunderLoan/protocol/ThunderLoan.sol#L209)
+
+src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230
+
+
+## reentrancy-events
+Impact: Low
+Confidence: Medium
+ - [ ] ID-10
+Reentrancy in [ThunderLoan.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230):
+	External calls:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L205)
+	Event emitted after the call(s):
+	- [FlashLoan(receiverAddress,token,amount,fee,params)](src/audits/thunderLoan/protocol/ThunderLoan.sol#L207)
+
+src/audits/thunderLoan/protocol/ThunderLoan.sol#L180-L230
+
+
+ - [ ] ID-11
+Reentrancy in [ThunderLoanUpgraded.flashloan(address,IERC20,uint256,bytes)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227):
+	External calls:
+	- [assetToken.updateExchangeRate(fee)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L202)
+	Event emitted after the call(s):
+	- [FlashLoan(receiverAddress,token,amount,fee,params)](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L204)
+
+src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L179-L227
+
+
+## pragma
+Impact: Informational
+Confidence: High
+ - [ ] ID-12
+8 different versions of Solidity are used:
+	- Version constraint >=0.6.2 is used by:
+		-[>=0.6.2](lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol#L4)
+		-[>=0.6.2](lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol#L4)
+	- Version constraint >=0.4.16 is used by:
+		-[>=0.4.16](lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol#L4)
+		-[>=0.4.16](lib/openzeppelin-contracts/contracts/interfaces/IERC20.sol#L4)
+		-[>=0.4.16](lib/openzeppelin-contracts/contracts/interfaces/draft-IERC1822.sol#L4)
+		-[>=0.4.16](lib/openzeppelin-contracts/contracts/proxy/beacon/IBeacon.sol#L4)
+		-[>=0.4.16](lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol#L4)
+		-[>=0.4.16](lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol#L4)
+	- Version constraint >=0.4.11 is used by:
+		-[>=0.4.11](lib/openzeppelin-contracts/contracts/interfaces/IERC1967.sol#L4)
+	- Version constraint >=0.8.4 is used by:
+		-[>=0.8.4](lib/openzeppelin-contracts/contracts/interfaces/draft-IERC6093.sol#L4)
+	- Version constraint ^0.8.21 is used by:
+		-[^0.8.21](lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Utils.sol#L4)
+	- Version constraint ^0.8.20 is used by:
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/proxy/utils/Initializable.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/utils/Address.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/utils/Context.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/utils/Errors.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/utils/LowLevelCall.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol#L5)
+		-[^0.8.20](lib/openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol#L4)
+		-[^0.8.20](lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol#L3)
+		-[^0.8.20](lib/openzeppelin-contracts-upgradeable/contracts/utils/ContextUpgradeable.sol#L4)
+	- Version constraint ^0.8.22 is used by:
+		-[^0.8.22](lib/openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol#L4)
+		-[^0.8.22](lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol#L3)
+	- Version constraint 0.8.34 is used by:
+		-[0.8.34](src/audits/thunderLoan/interfaces/IFlashLoanReceiver.sol#L2)
+		-[0.8.34](src/audits/thunderLoan/interfaces/IPoolFactory.sol#L2)
+		-[0.8.34](src/audits/thunderLoan/interfaces/ITSwapPool.sol#L2)
+		-[0.8.34](src/audits/thunderLoan/interfaces/IThunderLoan.sol#L2)
+		-[0.8.34](src/audits/thunderLoan/protocol/AssetToken.sol#L2)
+		-[0.8.34](src/audits/thunderLoan/protocol/OracleUpgradeable.sol#L2)
+		-[0.8.34](src/audits/thunderLoan/protocol/ThunderLoan.sol#L64)
+		-[0.8.34](src/audits/thunderLoan/upgradeProtocol/ThunderLoanUpgraded.sol#L64)
+
+lib/openzeppelin-contracts/contracts/interfaces/IERC1363.sol#L4
+
+

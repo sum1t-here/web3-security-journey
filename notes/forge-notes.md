@@ -400,6 +400,9 @@ forge coverage
 
 # Gas report
 forge test --gas-report
+
+# inpect
+forge inpect <Contract Name> methods
 ```
 
 ---
