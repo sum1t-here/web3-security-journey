@@ -20,10 +20,7 @@ contract CrossContractTest is Test {
         priceOracle2.setPrice(20);
 
         assertEq(
-            crossContract.getLowerPrice(
-                address(priceOracle1),
-                address(priceOracle2)
-            ),
+            crossContract.getLowerPrice(address(priceOracle1), address(priceOracle2)),
             10,
             "Expected lower price to be 10"
         );
@@ -32,10 +29,7 @@ contract CrossContractTest is Test {
         priceOracle2.setPrice(12);
 
         assertEq(
-            crossContract.getLowerPrice(
-                address(priceOracle1),
-                address(priceOracle2)
-            ),
+            crossContract.getLowerPrice(address(priceOracle1), address(priceOracle2)),
             12,
             "Expected lower price to be 12"
         );
@@ -44,22 +38,14 @@ contract CrossContractTest is Test {
         priceOracle2.setPrice(1);
 
         assertEq(
-            crossContract.getLowerPrice(
-                address(priceOracle1),
-                address(priceOracle2)
-            ),
-            1,
-            "Expected lower price to be 1"
+            crossContract.getLowerPrice(address(priceOracle1), address(priceOracle2)), 1, "Expected lower price to be 1"
         );
 
         priceOracle1.setPrice(type(uint256).max);
         priceOracle2.setPrice(type(uint256).max - 1);
 
         assertEq(
-            crossContract.getLowerPrice(
-                address(priceOracle1),
-                address(priceOracle2)
-            ),
+            crossContract.getLowerPrice(address(priceOracle1), address(priceOracle2)),
             type(uint256).max - 1,
             "Expected lower price to be type(uint256).max - 1"
         );

@@ -13,9 +13,7 @@ contract BasicStorageTest is Test {
 
     function testSetX() external {
         basicStorage.setX(42);
-        uint256 x = uint256(
-            vm.load(address(basicStorage), bytes32(uint256(0)))
-        );
+        uint256 x = uint256(vm.load(address(basicStorage), bytes32(uint256(0))));
         assertEq(x, 42, "expected x in storage to be 42 after setX(42)");
     }
 
