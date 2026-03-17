@@ -39,9 +39,9 @@ Detector: pragma
 		-^0.8.20 (lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol#4)
 		-^0.8.20 (lib/openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol#4)
 		-^0.8.20 (lib/openzeppelin-contracts/contracts/utils/Context.sol#4)
-	- Version constraint 0.8.34 is used by:
-		-0.8.34 (src/audits/tSwap/PoolFactory.sol#15)
-		-0.8.34 (src/audits/tSwap/TSwapPool.sol#15)
+	- Version constraint 0.8.28 is used by:
+		-0.8.28 (src/audits/tSwap/PoolFactory.sol#15)
+		-0.8.28 (src/audits/tSwap/TSwapPool.sol#15)
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
 INFO:Detectors:
 Detector: solc-version

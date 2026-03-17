@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.28;
 
 import {MockTSwapPool} from "./MockTSwapPool.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";

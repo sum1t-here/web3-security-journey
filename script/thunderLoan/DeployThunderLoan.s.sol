@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.34;
+pragma solidity ^0.8.34;
 
 import {Script} from "forge-std/Script.sol";
 import {ThunderLoan} from "../../src/audits/thunderLoan/protocol/ThunderLoan.sol";
