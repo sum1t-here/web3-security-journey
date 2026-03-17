@@ -14,15 +14,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import { L1Vault } from "./L1Vault.sol";
+import {L1Vault} from "./L1Vault.sol";
 
 contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -62,7 +62,7 @@ contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
      * @notice Locks tokens in the vault and emits a Deposit event
      * the unlock event will trigger the L2 minting process. There are nodes listening
      * for this event and will mint the corresponding tokens on L2. This is a centralized process.
-     * 
+     *
      * @param from The address of the user who is depositing tokens
      * @param l2Recipient The address of the user who will receive the tokens on L2
      * @param amount The amount of tokens to deposit
@@ -84,8 +84,8 @@ contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
     /*
      * @notice This is the function responsible for withdrawing tokens from L2 to L1.
      * Our L2 will have a similar mechanism for withdrawing tokens from L1 to L2.
-     * @notice The signature is required to prevent replay attacks. 
-     * 
+     * @notice The signature is required to prevent replay attacks.
+     *
      * @param to The address of the user who will receive the tokens on L1
      * @param amount The amount of tokens to withdraw
      * @param v The v value of the signature
@@ -121,9 +121,9 @@ contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
         }
 
         (address target, uint256 value, bytes memory data) = abi.decode(message, (address, uint256, bytes));
-        
+
         // @audit
-        (bool success,) = target.call{ value: value }(data);
+        (bool success,) = target.call{value: value}(data);
         if (!success) {
             revert L1BossBridge__CallFailed();
         }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.34;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract AssetToken is ERC20 {
     error AssetToken__onlyThunderLoan();
@@ -22,7 +22,7 @@ contract AssetToken is ERC20 {
     // ie: s_exchangeRate = 2
     // means 1 asset token is worth 2 underlying tokens
     // e underlying is USDC, asset is the share
-    
+
     uint256 private s_exchangeRate;
     uint256 public constant EXCHANGE_RATE_PRECISION = 1e18;
     uint256 private constant STARTING_EXCHANGE_RATE = 1e18;
@@ -52,12 +52,7 @@ contract AssetToken is ERC20 {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-    constructor(
-        address thunderLoan,
-        IERC20 underlying,
-        string memory assetName,
-        string memory assetSymbol
-    )
+    constructor(address thunderLoan, IERC20 underlying, string memory assetName, string memory assetSymbol)
         ERC20(assetName, assetSymbol)
         revertIfZeroAddress(thunderLoan)
         revertIfZeroAddress(address(underlying))

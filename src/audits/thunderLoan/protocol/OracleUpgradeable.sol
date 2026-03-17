@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.34;
 
-import { ITSwapPool } from "../interfaces/ITSwapPool.sol";
-import { IPoolFactory } from "../interfaces/IPoolFactory.sol";
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {ITSwapPool} from "../interfaces/ITSwapPool.sol";
+import {IPoolFactory} from "../interfaces/IPoolFactory.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract OracleUpgradeable is Initializable {
     address private s_poolFactory;

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { Test, console } from "forge-std/Test.sol";
-import { TSwapPool } from "../../../src/audits/tSwap/PoolFactory.sol";
-import { ERC20Mock } from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
-import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {Test, console} from "forge-std/Test.sol";
+import {TSwapPool} from "../../../src/audits/tSwap/PoolFactory.sol";
+import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 
 contract TSwapPoolTest is Test {
     TSwapPool pool;
@@ -115,7 +115,7 @@ contract TSwapPoolTest is Test {
         pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
 
         int256 startingY = int256(weth.balanceOf(address(pool)));
-        int256 expectedDeltaY = int256(-1) * int256(outputWeth); 
+        int256 expectedDeltaY = int256(-1) * int256(outputWeth);
 
         pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
 
@@ -134,16 +134,13 @@ contract TSwapPoolTest is Test {
         uint256 outputWeth = 1e17;
 
         // correct formula (0.3% fee) uses 1000 not 10000
-        uint256 correctInputAmount = (
-            (poolToken.balanceOf(address(pool)) * outputWeth * 1000) /
-            ((weth.balanceOf(address(pool)) - outputWeth) * 997)
-        );
+        uint256 correctInputAmount =
+            ((poolToken.balanceOf(address(pool)) * outputWeth * 1000)
+                / ((weth.balanceOf(address(pool)) - outputWeth) * 997));
 
         // what the contract actually charges (10000 instead of 1000)
         uint256 actualInputAmount = pool.getInputAmountBasedOnOutput(
-            outputWeth,
-            poolToken.balanceOf(address(pool)),
-            weth.balanceOf(address(pool))
+            outputWeth, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool))
         );
 
         console.log("correct input (0.3% fee) :", correctInputAmount);
@@ -182,9 +179,7 @@ contract TSwapPoolTest is Test {
         uint256 outputWeth = 1e18;
 
         uint256 expectedInputAmount = pool.getInputAmountBasedOnOutput(
-            outputWeth,
-            poolToken.balanceOf(address(pool)),
-            weth.balanceOf(address(pool))
+            outputWeth, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool))
         );
         console.log("expected input at current price:", expectedInputAmount);
 
@@ -194,20 +189,12 @@ contract TSwapPoolTest is Test {
         vm.startPrank(frontrunner);
         poolToken.approve(address(pool), type(uint256).max);
         // frontrunner buys a lot of weth, moving the price
-        pool.swapExactInput(
-            poolToken,
-            70e18,
-            weth,
-            1,
-            uint64(block.timestamp)
-        );
+        pool.swapExactInput(poolToken, 70e18, weth, 1, uint64(block.timestamp));
         vm.stopPrank();
 
         // no maxInputAmount param means user has no protection
         uint256 actualInputAmount = pool.getInputAmountBasedOnOutput(
-            outputWeth,
-            poolToken.balanceOf(address(pool)),
-            weth.balanceOf(address(pool))
+            outputWeth, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool))
         );
         console.log("actual input after price move :", actualInputAmount);
         console.log("extra poolTokens paid         :", actualInputAmount - expectedInputAmount);
@@ -239,20 +226,11 @@ contract TSwapPoolTest is Test {
         vm.startPrank(user);
         poolToken.approve(address(pool), type(uint256).max);
 
-        uint256 expectedOutput = pool.getOutputAmountBasedOnInput(
-            10e18,
-            poolToken.balanceOf(address(pool)),
-            weth.balanceOf(address(pool))
-        );
+        uint256 expectedOutput =
+            pool.getOutputAmountBasedOnInput(10e18, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool)));
         console.log("expected output :", expectedOutput);
 
-        uint256 actualReturn = pool.swapExactInput(
-        poolToken,
-            10e18,
-            weth,
-            1,
-            uint64(block.timestamp)
-        );
+        uint256 actualReturn = pool.swapExactInput(poolToken, 10e18, weth, 1, uint64(block.timestamp));
         console.log("actual return   :", actualReturn);
         assertEq(actualReturn, 0);
 
@@ -270,13 +248,11 @@ contract TSwapPoolTest is Test {
 
         vm.startPrank(user);
         poolToken.approve(address(pool), 10e18);
-        
+
         uint256 poolTokensToSell = 10e18;
 
         uint256 expectedWeth = pool.getOutputAmountBasedOnInput(
-            poolTokensToSell,
-            poolToken.balanceOf(address(pool)),
-            weth.balanceOf(address(pool))
+            poolTokensToSell, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool))
         );
 
         console.log("expected weth out        :", expectedWeth);

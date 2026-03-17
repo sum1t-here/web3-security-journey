@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { Test, console2 } from "forge-std/Test.sol";
-import { TokenFactory } from "../../src/audits/bossBridge/TokenFactory.sol";
-import { L1Token } from "../../src/audits/bossBridge/L1Token.sol";
+import {Test, console2} from "forge-std/Test.sol";
+import {TokenFactory} from "../../src/audits/bossBridge/TokenFactory.sol";
+import {L1Token} from "../../src/audits/bossBridge/L1Token.sol";
 
 contract TokenFactoryTest is Test {
     TokenFactory tokenFactory;

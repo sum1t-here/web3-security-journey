@@ -6,4 +6,4 @@ pragma solidity 0.8.34;
 // 1. Asset exchange rate should always increase
 // 2. The protocol should never lose liquidity provider deposits, it should always go up
 
-contract Invariant { }
+contract Invariant {}

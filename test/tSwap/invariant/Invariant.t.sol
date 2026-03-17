@@ -22,10 +22,10 @@ contract Invariant is StdInvariant, Test {
     Handler handler;
 
     function setUp() public {
-       weth = new ERC20Mock();
-       poolToken = new ERC20Mock();
-       factory = new PoolFactory(address(weth));
-       pool = TSwapPool(factory.createPool(address(poolToken)));
+        weth = new ERC20Mock();
+        poolToken = new ERC20Mock();
+        factory = new PoolFactory(address(weth));
+        pool = TSwapPool(factory.createPool(address(poolToken)));
 
         // create the initial liquidity
         poolToken.mint(address(this), uint256(STARTING_X));
@@ -41,13 +41,8 @@ contract Invariant is StdInvariant, Test {
         bytes4[] memory selectors = new bytes4[](2);
         selectors[0] = Handler.deposit.selector;
         selectors[1] = handler.swapPoolTokenForWethBasedOnOutputWeth.selector;
-        
-        targetSelector(
-            FuzzSelector({
-                addr: address(handler),
-                selectors: selectors
-            })
-        );
+
+        targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
         targetContract(address(handler));
     }
 

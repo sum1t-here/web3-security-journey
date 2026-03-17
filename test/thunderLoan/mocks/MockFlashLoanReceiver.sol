@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { IFlashLoanReceiver, IThunderLoan } from "../../../src/audits/thunderLoan/interfaces/IFlashLoanReceiver.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IFlashLoanReceiver, IThunderLoan} from "../../../src/audits/thunderLoan/interfaces/IFlashLoanReceiver.sol";
 
 contract MockFlashLoanReceiver {
     error MockFlashLoanReceiver__onlyOwner();

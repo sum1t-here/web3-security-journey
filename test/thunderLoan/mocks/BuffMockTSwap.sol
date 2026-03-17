@@ -14,14 +14,16 @@
 // SPDX-License-Identifier: GNU General Public License v3.0
 pragma solidity 0.8.34;
 
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract BuffMockTSwap is ERC20 {
     error TSwapPool__DeadlineHasPassed(uint256 deadline);
     error TSwapPool__MaxPoolTokenDepositTooHigh(uint256 maximumPoolTokensToDeposit, uint256 poolTokensToDeposit);
-    error TSwapPool__MinLiquidityTokensToMintTooLow(uint256 minimumLiquidityTokensToMint, uint256 liquidityTokensToMint);
+    error TSwapPool__MinLiquidityTokensToMintTooLow(
+        uint256 minimumLiquidityTokensToMint, uint256 liquidityTokensToMint
+    );
     error TSwapPool__WethDepositAmountTooLow(uint256 minimumWethDeposit, uint256 wethToDeposit);
     error TSwapPool__WethToReceiveTooLow(uint256 minWethToWithdraw);
     error TSwapPool__PoolTokensToReceiveTooLow(uint256 minPoolTokensToWithdraw);
@@ -67,12 +69,7 @@ contract BuffMockTSwap is ERC20 {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-    constructor(
-        address poolToken,
-        address weth,
-        string memory liquidityTokenName,
-        string memory liquidityTokenSymbol
-    )
+    constructor(address poolToken, address weth, string memory liquidityTokenName, string memory liquidityTokenSymbol)
         ERC20(liquidityTokenName, liquidityTokenSymbol)
     {
         i_weth = IERC20(weth);
@@ -97,12 +94,7 @@ contract BuffMockTSwap is ERC20 {
         uint256 minimumLiquidityTokensToMint,
         uint256 maximumPoolTokensToDeposit,
         uint256 deadline
-    )
-        external
-        revertIfDeadlinePassed(deadline)
-        revertIfZero(wethToDeposit)
-        returns (uint256 liquidityTokensToMint)
-    {
+    ) external revertIfDeadlinePassed(deadline) revertIfZero(wethToDeposit) returns (uint256 liquidityTokensToMint) {
         if (wethToDeposit < MINIMUM_WETH_LIQUIDITY) {
             revert TSwapPool__WethDepositAmountTooLow(MINIMUM_WETH_LIQUIDITY, wethToDeposit);
         }
@@ -151,9 +143,7 @@ contract BuffMockTSwap is ERC20 {
         uint256 wethToDeposit,
         uint256 poolTokensToDeposit,
         uint256 liquidityTokensToMint
-    )
-        private
-    {
+    ) private {
         _mint(msg.sender, liquidityTokensToMint);
         emit LiquidityAdded(msg.sender, wethToDeposit, poolTokensToDeposit);
 
@@ -243,7 +233,8 @@ contract BuffMockTSwap is ERC20 {
         revertIfZero(outputTokensOrWethReserves)
         returns (uint256 inputTokensOrWeth)
     {
-        uint256 numerator = inputTokensOrWethReserves * outputTokensOrWeth * FEE_DENOMINATOR;
+        uint256 numerator =
+            inputTokensOrWethReserves * outputTokensOrWeth * FEE_DENOMINATOR;
         uint256 denominator = (outputTokensOrWethReserves - outputTokensOrWeth) * (FEE_DENOMINATOR - FEE);
         return numerator / denominator;
     }
@@ -258,11 +249,7 @@ contract BuffMockTSwap is ERC20 {
         i_poolToken.safeTransfer(msg.sender, poolTokenAmount);
     }
 
-    function swapWethForPoolTokenBasedOnInputWeth(
-        uint256 wethAmount,
-        uint256 minTokenAmount,
-        uint256 deadline
-    )
+    function swapWethForPoolTokenBasedOnInputWeth(uint256 wethAmount, uint256 minTokenAmount, uint256 deadline)
         external
         revertIfDeadlinePassed(deadline)
         revertIfZero(minTokenAmount)
@@ -282,11 +269,7 @@ contract BuffMockTSwap is ERC20 {
     /// @param poolTokenAmount Exact number of pool tokens to buy
     /// @param maxWeth Max number of Weth to sell for the pool tokens
     /// @param deadline The timestamp when this transaction must be completed by
-    function swapWethForPoolTokenBasedOnOutputPoolToken(
-        uint256 poolTokenAmount,
-        uint256 maxWeth,
-        uint256 deadline
-    )
+    function swapWethForPoolTokenBasedOnOutputPoolToken(uint256 poolTokenAmount, uint256 maxWeth, uint256 deadline)
         external
         revertIfDeadlinePassed(deadline)
         revertIfZero(maxWeth)
@@ -312,11 +295,7 @@ contract BuffMockTSwap is ERC20 {
         i_poolToken.safeTransferFrom(msg.sender, address(this), poolTokenAmount);
     }
 
-    function swapPoolTokenForWethBasedOnInputPoolToken(
-        uint256 poolTokenAmount,
-        uint256 minWeth,
-        uint256 deadline
-    )
+    function swapPoolTokenForWethBasedOnInputPoolToken(uint256 poolTokenAmount, uint256 minWeth, uint256 deadline)
         external
         revertIfDeadlinePassed(deadline)
         revertIfZero(poolTokenAmount)
@@ -332,11 +311,7 @@ contract BuffMockTSwap is ERC20 {
         _swapPoolTokensForWeth(poolTokenAmount, wethBought);
     }
 
-    function swapPoolTokenForWethBasedOnOutputWeth(
-        uint256 wethAmount,
-        uint256 maxPoolTokens,
-        uint256 deadline
-    )
+    function swapPoolTokenForWethBasedOnOutputWeth(uint256 wethAmount, uint256 maxPoolTokens, uint256 deadline)
         external
         revertIfDeadlinePassed(deadline)
         revertIfZero(wethAmount)

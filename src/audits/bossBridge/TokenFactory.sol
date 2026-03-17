@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.34;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-/* 
+/*
 * @title TokenFactory
 * @dev Allows the owner to deploy new ERC20 contracts
 * @dev This contract will be deployed on both an L1 & an L2
@@ -13,7 +13,7 @@ contract TokenFactory is Ownable {
 
     event TokenDeployed(string symbol, address addr);
 
-    constructor() Ownable(msg.sender) { }
+    constructor() Ownable(msg.sender) {}
 
     /*
      * @dev Deploys a new ERC20 contract
