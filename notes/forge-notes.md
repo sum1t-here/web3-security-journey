@@ -403,6 +403,9 @@ forge test --gas-report
 
 # inpect
 forge inpect <Contract Name> methods
+
+# debug
+forge test --match-path "*Huff*" --match-test "testReadValue" --debug
 ```
 
 ---
