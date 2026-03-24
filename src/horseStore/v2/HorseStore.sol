@@ -4,10 +4,10 @@ pragma solidity ^0.8.28;
 import {ERC721Enumerable, ERC721} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {IHorseStore} from "./IHorseStore.sol";
 
-/* 
+/*
  * @title HorseStore
  * @author equestrian_lover_420
- * @notice An NFT that represents a horse. Horses should be fed daily to keep happy, ideally several times a day. 
+ * @notice An NFT that represents a horse. Horses should be fed daily to keep happy, ideally several times a day.
  */
 contract HorseStore is IHorseStore, ERC721Enumerable {
     string constant NFT_NAME = "HorseStore";
@@ -19,17 +19,17 @@ contract HorseStore is IHorseStore, ERC721Enumerable {
     constructor() ERC721(NFT_NAME, NFT_SYMBOL) {}
 
     /*
-     * @notice allows anyone to mint their own horse NFT. 
+     * @notice allows anyone to mint their own horse NFT.
      */
     function mintHorse() external {
         _safeMint(msg.sender, totalSupply());
     }
 
-    /* 
+    /*
      * @param horseId the id of the horse to feed
-     * @notice allows anyone to feed anyone else's horse. 
-     * 
-     * @audit-medium: Feeding unminted horeses is currently allowed! 
+     * @notice allows anyone to feed anyone else's horse.
+     *
+     * @audit-medium: Feeding unminted horeses is currently allowed!
      */
     function feedHorse(uint256 horseId) external {
         horseIdToFedTimeStamp[horseId] = block.timestamp;

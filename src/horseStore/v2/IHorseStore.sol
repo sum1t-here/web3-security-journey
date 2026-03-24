@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
-/* 
+/*
  * @title IHorseStore
  * @author equestrian_lover_420
  */
