@@ -13,4 +13,9 @@ fail_on_revert = true
 runs = 1000
 seed = "0x1"
 
+[profile.halmos]
+src = "src"
+test = "test"
+
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
