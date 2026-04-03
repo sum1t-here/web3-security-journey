@@ -4,9 +4,8 @@ pragma solidity ^0.8.28;
 import {MathMasters} from "src/audits/mathMaster/MathMasters.sol";
 
 contract CompactCodeBase {
-
     // Since in the library mulWadUp is internal, we need to create a wrapper function to make it external.
-    
+
     function mulWadUp(uint256 x, uint256 y) external pure returns (uint256) {
         return MathMasters.mulWadUp(x, y);
     }
@@ -29,8 +28,8 @@ contract CompactCodeBase {
     }
 
     /**
-        Modular verification
-    */
+     *     Modular verification
+     */
 
     function solmateTopHalf(uint256 x) public pure returns (uint256 z) {
         assembly {

@@ -322,10 +322,7 @@ abstract contract BaseTest is Test {
         vm.stopPrank();
     }
 
-    function _giveListing(address to, uint256 tokenId, uint256 price)
-        internal
-        returns (NftMarketplace.Listing memory)
-    {
+    function _giveListing(address to, uint256 tokenId, uint256 price) internal returns (NftMarketplace.Listing memory) {
         _giveAndApproveNft(to, tokenId);
         vm.prank(to);
         nftMarketplace.listItem(address(nftMock), STARTING_TOKEN_ID, price);

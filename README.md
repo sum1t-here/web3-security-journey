@@ -35,6 +35,8 @@ Foundational Solidity and EVM concepts built week by week.
 | 7| Rareskill Decoder & Encoder | [Decoder](./src/rareskill/decoder/Decoder.sol) & [Encoder](./src/rareskill/encoder/Encoder.sol) |
 | 8| Rareskill Excercise - Token Gated NFT | [TokenGatedNFT](./src/contracts/TokenGatedNft.sol) & [Tests](./test/contracts/TokenGatedNft) |
 | 9| Adv Smart Contract Security - Huff and yul | [HorseStore](./src/horseStore) & [Differential Testing](./test/horseStore) |
+| 10| Certora | [GasBad Spec](./certora/spec/GasBad.spec), [GasBad Config](./certora/conf/GasBad.conf), [GasBadNft contract](./src/audits/gasBadNft), [NftMock Spec](./certora/spec/NftMock.spec), [NftMock Config](./certora/conf/NftMock.conf), [NftMock](./src/audits/nftMock) & [MathMaster contract](./src/audits/mathMaster), [Mulwad Spec](./certora/spec/Mulwad.spec), [Mulwad Config](./certora/conf/Mulwad.conf), [Sqrt Spec](./certora/spec/Sqrt.spec), [Sqrt Config](./certora/conf/Sqrt.conf)|
+| 11| Halmos | [Halmos Fuzzing](./test/mathMaster/MathMaster.t.sol) Line 72-79|
 
 ---
 

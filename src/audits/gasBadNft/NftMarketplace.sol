@@ -8,7 +8,7 @@ import {INftMarketplace} from "./INftMarketplace.sol";
  * @title NftMarketplace
  * @auth Patrick Collins
  * @notice This contract allows users to list NFTs for sale
- * @notice This is the reference 
+ * @notice This is the reference
  */
 contract NftMarketplace is INftMarketplace {
     error NftMarketplace__PriceNotMet(address nftAddress, uint256 tokenId, uint256 price);
@@ -53,7 +53,7 @@ contract NftMarketplace is INftMarketplace {
      * @notice Method for cancelling listing
      * @param nftAddress Address of NFT contract
      * @param tokenId Token ID of NFT
-     * 
+     *
      * @audit-known seller can front-run a bought NFT and cancel the listing
      */
     function cancelListing(address nftAddress, uint256 tokenId) external {
@@ -100,7 +100,7 @@ contract NftMarketplace is INftMarketplace {
      * @param nftAddress Address of NFT contract
      * @param tokenId Token ID of NFT
      * @param newPrice Price in Wei of the item
-     * 
+     *
      * @audit-known seller can front-run a bought NFT and update the listing
      */
     function updateListing(address nftAddress, uint256 tokenId, uint256 newPrice) external {
@@ -138,7 +138,15 @@ contract NftMarketplace is INftMarketplace {
         }
     }
 
-    function onERC721Received(address, /*operator*/ address, /*from*/ uint256, /*tokenId*/ bytes calldata /*data*/ )
+    function onERC721Received(
+        address,
+        /*operator*/
+        address,
+        /*from*/
+        uint256,
+        /*tokenId*/
+        bytes calldata /*data*/
+    )
         external
         pure
         returns (bytes4)
